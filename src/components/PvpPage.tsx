@@ -9,6 +9,7 @@ import AboutModal from "./AboutModal";
 import MysteryBox from "./MysteryBox";
 import BetPanel, { AutoConfig } from "./BetPanel";
 import { sounds } from "../lib/pvpSounds";
+import { CHAIN_ID as GIWA_CHAIN_ID, CHAIN_ID_HEX as GIWA_CHAIN_ID_HEX, CHAIN_NAME, RPC_URL as GIWA_RPC, EXPLORER_URL, NATIVE_CURRENCY } from "../lib/config";
 
 const API = "https://lit-api.test-hub.xyz";
 const STATUS_URL = `${API}/bets/status`;
@@ -17,10 +18,10 @@ const CONFIRM_URL = `${API}/bets/confirm`;
 const TILES = 30;
 
 const CONTRACT_ADDRESS = "0x162ED453121f91eb3595e7f4513F78a0b5b02a81";
-const CHAIN_ID = 4441;
-const CHAIN_ID_HEX = "0x1159";
-const RPC_URL = "https://sepolia-rpc.giwa.io";
-const EXPLORER_TX = "https://sepolia-explorer.giwa.io/tx";
+const CHAIN_ID = GIWA_CHAIN_ID;
+const CHAIN_ID_HEX = GIWA_CHAIN_ID_HEX;
+const RPC_URL = GIWA_RPC;
+const EXPLORER_TX = `${EXPLORER_URL}/tx`;
 const MIN_BET = 0.001;
 
 const BET_ABI = [
@@ -29,7 +30,7 @@ const BET_ABI = [
   "function getCurrentRound() external view returns (uint256 id, bool resolved, uint8 winningTile, uint256 totalPool)"
 ];
 
-async function ensureLiteForge() {
+async function ensureGiwaChain() {
   const eth = (window as any).ethereum;
   if (!eth) throw new Error("No wallet found. Install MetaMask.");
   try {
@@ -40,10 +41,10 @@ async function ensureLiteForge() {
         method: "wallet_addEthereumChain",
         params: [{
           chainId: CHAIN_ID_HEX,
-          chainName: "LiteForge",
+          chainName: CHAIN_NAME,
           rpcUrls: [RPC_URL],
-          nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
-          blockExplorerUrls: ["https://sepolia-explorer.giwa.io"],
+          nativeCurrency: { ...NATIVE_CURRENCY },
+          blockExplorerUrls: [EXPLORER_URL],
         }],
       });
     } else {
@@ -447,10 +448,10 @@ export default function PvpPage({ onBack, onAbout }: { onBack: () => void; onAbo
     }
     setPlacing(true);
     try {
-      await ensureLiteForge();
+      await ensureGiwaChain();
     } catch (e: any) {
       setPlacing(false);
-      setToast(`❌ ${e?.message || "Wrong network. Switch to LiteForge."}`);
+      setToast(`❌ ${e?.message || "Wrong network. Switch to GIWA Sepolia."}`);
       setTimeout(() => setToast(null), 3500);
       return;
     }
@@ -458,7 +459,7 @@ export default function PvpPage({ onBack, onAbout }: { onBack: () => void; onAbo
     const net = await provider.getNetwork();
     if (Number(net.chainId) !== CHAIN_ID) {
       setPlacing(false);
-      setToast("❌ Wrong network. Switch to LiteForge (4441).");
+      setToast(`❌ Wrong network. Switch to GIWA Sepolia (${CHAIN_ID}).`);
       setTimeout(() => setToast(null), 3500);
       return;
     }

@@ -1,5 +1,7 @@
 /** api.ts — thin client for the BetsOnBlock backend. */
 
+import { API_BASE } from "./config";
+
 export type RoundView = {
   id: number;
   status: "open" | "locked" | "settling" | "settled";
@@ -27,16 +29,16 @@ async function j<T>(url: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  rounds: () => j<{ rounds: RoundView[] }>("/api/rounds"),
-  history: (n = 20) => j<{ history: RoundView[] }>(`/api/history?n=${n}`),
+  rounds: () => j<{ rounds: RoundView[] }>(`${API_BASE}/api/rounds`),
+  history: (n = 20) => j<{ history: RoundView[] }>(`${API_BASE}/api/history?n=${n}`),
   historyPage: (page = 1, limit = 20) =>
-    j<Paginated<{ history: RoundView[] }>>(`/api/history?page=${page}&limit=${limit}`),
+    j<Paginated<{ history: RoundView[] }>>(`${API_BASE}/api/history?page=${page}&limit=${limit}`),
   betsFor: (wallet: string, page = 1, limit = 20) =>
-    j<Paginated<{ bets: any[] }>>(`/api/bets/${wallet}?page=${page}&limit=${limit}`),
-  head: () => j<{ block: number }>("/api/head"),
-  verify: (block: number) => j<{ block: any; signals: any }>(`/api/verify/${block}`),
+    j<Paginated<{ bets: any[] }>>(`${API_BASE}/api/bets/${wallet}?page=${page}&limit=${limit}`),
+  head: () => j<{ block: number }>(`${API_BASE}/api/head`),
+  verify: (block: number) => j<{ block: any; signals: any }>(`${API_BASE}/api/verify/${block}`),
   bet: (body: { wallet: string; roundId: number; mode: string; pick: string; stake: number; tx_hash?: string }) =>
-    j<{ ok: boolean; error?: string; round?: RoundView }>("/api/bet", {
+    j<{ ok: boolean; error?: string; round?: RoundView }>(`${API_BASE}/api/bet`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

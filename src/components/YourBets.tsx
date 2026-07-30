@@ -1,3 +1,4 @@
+import { API_BASE } from "../lib/config";
 import React from "react";
 import { Wallet2, ChevronDown, ChevronUp, ExternalLink, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { EXPLORER } from "../lib/wagmi";
@@ -30,7 +31,7 @@ function betKind(b: { win: boolean; payout: number; refund?: boolean }): "win" |
   return "loss";
 }
 
-const API_BASE = (import.meta as any).env?.VITE_API_URL || "";
+
 const PAGE_SIZE = 3;
 
 function fmtClock(ms: number) {

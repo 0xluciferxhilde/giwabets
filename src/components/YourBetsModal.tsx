@@ -1,3 +1,4 @@
+import { API_BASE } from "../lib/config";
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Search, ExternalLink } from "lucide-react";
@@ -39,7 +40,7 @@ type EndedGroup = {
   net: number;
 };
 
-const API_BASE = (import.meta as any).env?.VITE_API_URL || "";
+
 
 const wrap: React.CSSProperties = {
   position: "fixed", inset: 0, zIndex: 100, display: "grid", placeItems: "center",
