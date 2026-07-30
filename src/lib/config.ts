@@ -6,7 +6,7 @@ export const API_BASE =
 
 /** GIWA Sepolia testnet */
 export const CHAIN_ID = 91342;
-export const CHAIN_ID_HEX = "0x1652e";
+export const CHAIN_ID_HEX = "0x164ce";
 export const CHAIN_NAME = "GIWA Sepolia";
 export const RPC_URL = "https://sepolia-rpc.giwa.io";
 export const EXPLORER_URL = "https://sepolia-explorer.giwa.io";
