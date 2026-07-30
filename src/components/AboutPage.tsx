@@ -338,7 +338,7 @@ More tiles  = low variance (steady small returns)`}</pre>
               <div style={{ fontWeight: 900, fontSize: 14, marginBottom: 8, color: GOLD }}>🎉 BONANZA Round</div>
               <div style={{ fontSize: 13, lineHeight: 1.8 }}>
                 <div style={{ color: GREEN }}>✓ ETH payout to winners</div>
-                <div style={{ color: GREEN }}>✓ +10,000 LitDEX Points to ALL winners</div>
+                <div style={{ color: GREEN }}>✓ Boosted ETH payout to ALL winners</div>
                 <div style={{ color: MUTED, fontSize: 12 }}>(awarded on-chain, verifiable by tx hash)</div>
               </div>
             </div>
@@ -370,7 +370,7 @@ More tiles  = low variance (steady small returns)`}</pre>
             <ResultCard label="LEGENDARY" value="1% | 50,000 pts" color={GOLD} />
           </div>
           <div style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.7 }}>
-            Points are awarded directly to your LitDEX wallet on-chain.
+            Rewards are awarded directly to your wallet on-chain.
           </div>
           <div style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.7, marginTop: 6 }}>
             Click the 🎁 MYSTERY BOX button in the header to track your progress and claim boxes.

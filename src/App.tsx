@@ -13,8 +13,6 @@ import YourBetsModal from "./components/YourBetsModal";
 import WalletButton from "./components/WalletButton";
 import CoinImg from "./components/Coin";
 import WinnersMarquee from "./components/WinnersMarquee";
-import PointsToast from "./components/PointsToast";
-import YourPointsModal from "./components/YourPointsModal";
 import HeaderStats from "./components/HeaderStats";
 import PvpPage from "./components/PvpPage";
 import AboutPage from "./components/AboutPage";
@@ -75,7 +73,6 @@ export default function App() {
   const [pfBlock, setPfBlock] = React.useState<number | null>(null);
   const [liveBets, setLiveBets] = React.useState<LiveBet[]>([]);
   const [showYourBets, setShowYourBets] = React.useState(false);
-  const [showYourPoints, setShowYourPoints] = React.useState(false);
 
   const { address, isConnected } = useAccount();
   const { data: balance, refetch: refetchBal } = useBalance({ address });
@@ -264,23 +261,7 @@ export default function App() {
                     </span>
                   )}
                 </button>
-                <button
-                  onClick={() => setShowYourPoints(true)}
-                  style={{
-                    display: "inline-flex", alignItems: "center", gap: 10,
-                    background: "#fff7ed", color: "#0a0a0a", border: "3px solid #000",
-                    borderRadius: 12, padding: "12px 20px", fontWeight: 900,
-                    fontFamily: "'Space Grotesk',system-ui,sans-serif",
-                    letterSpacing: ".04em", textTransform: "uppercase",
-                    boxShadow: "5px 5px 0 0 rgba(0,0,0,.9)", cursor: "pointer",
-                    transition: "transform .15s ease, box-shadow .15s ease",
-                  }}
-                  onMouseDown={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translate(3px,3px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "2px 2px 0 0 rgba(0,0,0,.9)"; }}
-                  onMouseUp={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = ""; (e.currentTarget as HTMLButtonElement).style.boxShadow = "5px 5px 0 0 rgba(0,0,0,.9)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = ""; (e.currentTarget as HTMLButtonElement).style.boxShadow = "5px 5px 0 0 rgba(0,0,0,.9)"; }}
-                >
-                  <span style={{ color: "#f59e0b", fontSize: 18, lineHeight: 1 }}>◆</span> Your Points
-                </button>
+                
               </div>
             )}
           </div>
@@ -362,10 +343,6 @@ export default function App() {
           onClose={() => setShowYourBets(false)}
         />
       )}
-      {showYourPoints && addr && (
-        <YourPointsModal address={addr} onClose={() => setShowYourPoints(false)} />
-      )}
-      <PointsToast />
     </>
   );
 }

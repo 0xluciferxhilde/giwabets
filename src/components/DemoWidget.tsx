@@ -3,7 +3,7 @@ import { Shield, Coins, RotateCcw } from "lucide-react";
 import { signals } from "../lib/modes";
 import Coin from "./Coin";
 
-// A real, already-settled LiteForge block (the one we analysed earlier).
+// A real, already-settled GIWA Sepolia block (the one we analysed earlier).
 const DEMO_BLOCK = {
   number: 14908225,
   hash: "0xd7fb8385af06e1b2f5e31af7da39e88a6a4fa4df23a10d130166efe0aca2de4c",

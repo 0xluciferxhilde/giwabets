@@ -14,7 +14,7 @@ export default function Home({ onEnter, onPvp }: { onEnter: () => void; onPvp?: 
         />
         <h1>Bet on the<br /><span className="grad">next block.</span></h1>
         <p className="hero-sub">
-          Every outcome is decided by a future LiteForge block, its hash, its transactions, its gas.
+          Every outcome is decided by a future GIWA Sepolia block, its hash, its transactions, its gas.
           Nobody can predict it. Nobody can fake it. You can verify every single result on-chain.
         </p>
         <div className="enter-btn-row">
