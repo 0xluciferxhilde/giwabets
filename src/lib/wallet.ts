@@ -40,7 +40,7 @@ export async function ensureChain() {
   try {
     await eth.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CHAIN_ID_HEX }] });
   } catch (e: any) {
-    if (e?.code === 4902) {
+    if (e?.code === 4902 || e?.code === -32603 || e?.data?.originalError?.code === 4902) {
       await eth.request({
         method: "wallet_addEthereumChain",
         params: [{
@@ -49,6 +49,8 @@ export async function ensureChain() {
           blockExplorerUrls: [EXPLORER_URL],
         }],
       });
+      // some wallets add without switching
+      await eth.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CHAIN_ID_HEX }] }).catch(() => {});
     } else { throw e; }
   }
 }

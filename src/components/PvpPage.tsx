@@ -36,7 +36,7 @@ async function ensureGiwaChain() {
   try {
     await eth.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CHAIN_ID_HEX }] });
   } catch (e: any) {
-    if (e?.code === 4902) {
+    if (e?.code === 4902 || e?.code === -32603 || e?.data?.originalError?.code === 4902) {
       await eth.request({
         method: "wallet_addEthereumChain",
         params: [{
