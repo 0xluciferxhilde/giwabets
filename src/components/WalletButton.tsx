@@ -34,7 +34,7 @@ export default function WalletButton() {
           <>
             <div className="bal" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
               <Coin size={14} />
-              {balNum.toLocaleString(undefined, { maximumFractionDigits: 4 })} zkLTC
+              {balNum.toLocaleString(undefined, { maximumFractionDigits: 4 })} ETH
             </div>
             <button className="btn btn-ghost btn-sm wallet-chip" onClick={() => setOpen(true)}>
               <span className="wb-avatar"><Jazzicon diameter={18} seed={jsNumberForAddress(address)} /></span>
@@ -95,7 +95,7 @@ export default function WalletButton() {
                       {balNum.toLocaleString(undefined, { maximumFractionDigits: 6 })}
                     </b>
                     <span style={{ color: "#9ca3af", fontSize: 12, textTransform: "uppercase", letterSpacing: ".12em" }}>
-                      zkLTC
+                      ETH
                     </span>
                   </div>
 

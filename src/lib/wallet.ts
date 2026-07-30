@@ -1,21 +1,25 @@
-/** wallet.ts — real MetaMask wallet connect on LiteForge (zkLTC).
+/** wallet.ts — real MetaMask wallet connect on GIWA Sepolia (ETH).
  *
  * Fundamentals (as specced):
  *  - User connects their own wallet (MetaMask).
- *  - Every bet is a FIXED 0.01 zkLTC stake (no more, no less).
- *  - Placing a bet sends 0.01 zkLTC to the house wallet (real tx).
+ *  - Every bet is a FIXED 0.01 ETH stake (no more, no less).
+ *  - Placing a bet sends 0.01 ETH to the house wallet (real tx).
  *  - Winners are paid out from the house wallet.
- *  - Balance shown is the user's real on-chain zkLTC.
+ *  - Balance shown is the user's real on-chain ETH.
  */
 import { BrowserProvider, JsonRpcProvider, formatEther, parseEther } from "ethers";
+import {
+  CHAIN_ID as CID, CHAIN_ID_HEX as CIDH, CHAIN_NAME, RPC_URL,
+  EXPLORER_URL, NATIVE_CURRENCY, HOUSE_ADDRESS as HOUSE,
+} from "./config";
 
-export const BET_AMOUNT = "0.01";           // fixed stake, zkLTC
-export const CHAIN_ID = 4441;
-export const CHAIN_ID_HEX = "0x1159";
-export const RPC = "https://liteforge.rpc.caldera.xyz/http";
+export const BET_AMOUNT = "0.01";           // fixed stake, ETH
+export const CHAIN_ID = CID;
+export const CHAIN_ID_HEX = CIDH;
+export const RPC = RPC_URL;
 // House wallet that collects stakes and pays winners. Set this to the funded
 // wallet's PUBLIC address. (Private key lives only on the payout backend.)
-export const HOUSE_ADDRESS = "0x554FA14360dEaE7A7ec6b9216Fa9Ca3cA76983a0";
+export const HOUSE_ADDRESS = HOUSE;
 
 const read = new JsonRpcProvider(RPC, CHAIN_ID, { staticNetwork: true });
 
@@ -40,9 +44,9 @@ export async function ensureChain() {
       await eth.request({
         method: "wallet_addEthereumChain",
         params: [{
-          chainId: CHAIN_ID_HEX, chainName: "LiteForge",
-          rpcUrls: [RPC], nativeCurrency: { name: "zkLTC", symbol: "zkLTC", decimals: 18 },
-          blockExplorerUrls: ["https://liteforge.explorer.caldera.xyz"],
+          chainId: CHAIN_ID_HEX, chainName: CHAIN_NAME,
+          rpcUrls: [RPC], nativeCurrency: { ...NATIVE_CURRENCY },
+          blockExplorerUrls: [EXPLORER_URL],
         }],
       });
     } else { throw e; }
@@ -56,7 +60,7 @@ export async function getBalance(addr: string): Promise<number> {
   } catch { return 0; }
 }
 
-/** Send the fixed 0.01 zkLTC stake to the house wallet. Returns the tx hash. */
+/** Send the fixed 0.01 ETH stake to the house wallet. Returns the tx hash. */
 export async function sendStake(): Promise<string> {
   const eth = (window as any).ethereum;
   if (!eth) throw new Error("No wallet");

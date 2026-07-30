@@ -279,10 +279,10 @@ export default function PvpWheelVisual({
       const youWon = (myPayout ?? 0) > 0;
       setCenter({
         line1: bonanza ? `🎉 BONANZA · TILE ${winningTile}!` : `🏆 TILE ${winningTile} WINS!`,
-        line2: `Pool: ${pot.toFixed(3)} zkLTC`,
+        line2: `Pool: ${pot.toFixed(3)} ETH`,
         line3: bonanza
           ? "+10,000 POINTS to all winners!"
-          : (youWon ? `YOU WON! +${(myPayout ?? 0).toFixed(3)} zkLTC` : "Better luck next time!"),
+          : (youWon ? `YOU WON! +${(myPayout ?? 0).toFixed(3)} ETH` : "Better luck next time!"),
       });
       setTimeout(() => setShake(false), 600);
       // Hold the winner on screen
@@ -673,7 +673,7 @@ export default function PvpWheelVisual({
               fontSize: "clamp(13px, 1.4vw, 18px)", fontWeight: 700,
               color: "#94a3b8", letterSpacing: ".06em",
               fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-            }}>POOL · {pot.toFixed(3)} zkLTC</div>
+            }}>POOL · {pot.toFixed(3)} ETH</div>
           </div>
         </div>, document.body
       )}

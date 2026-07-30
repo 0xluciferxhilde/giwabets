@@ -1,26 +1,26 @@
-import { http, createConfig } from "wagmi";
-import { injected, metaMask } from "wagmi/connectors";
+import { http } from "wagmi";
 import { defineChain } from "viem";
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { CHAIN_ID, CHAIN_NAME, RPC_URL, EXPLORER_URL, NATIVE_CURRENCY } from "./config";
 
-export const liteForge = defineChain({
-  id: 4441,
-  name: "LiteForge",
-  nativeCurrency: { name: "zkLTC", symbol: "zkLTC", decimals: 18 },
+export const giwaSepolia = defineChain({
+  id: CHAIN_ID,
+  name: CHAIN_NAME,
+  nativeCurrency: { ...NATIVE_CURRENCY },
   rpcUrls: {
-    default: { http: ["https://liteforge.rpc.caldera.xyz/http"] },
+    default: { http: [RPC_URL] },
   },
   blockExplorers: {
-    default: { name: "LiteForge Explorer", url: "https://liteforge.explorer.caldera.xyz" },
+    default: { name: "GIWA Sepolia Explorer", url: EXPLORER_URL },
   },
 });
 
-export const EXPLORER = liteForge.blockExplorers.default.url;
+export const EXPLORER = giwaSepolia.blockExplorers.default.url;
 
 export const wagmiConfig = getDefaultConfig({
   appName: "BetsOnBlock",
-  projectId: "betsonblock-litvm",
-  chains: [liteForge],
-  transports: { [liteForge.id]: http() },
+  projectId: "betsonblock-giwa",
+  chains: [giwaSepolia],
+  transports: { [giwaSepolia.id]: http() },
   ssr: false,
 });

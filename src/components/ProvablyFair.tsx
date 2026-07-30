@@ -2,7 +2,7 @@ import React from "react";
 import { Shield, ExternalLink } from "lucide-react";
 import { api } from "../lib/api";
 
-const EXPLORER = "https://liteforge.explorer.caldera.xyz";
+const EXPLORER = "https://sepolia-explorer.giwa.io";
 
 export default function ProvablyFair({ block, onClose }: { block: number; onClose: () => void }) {
   const [data, setData] = React.useState<{ block: any; signals: any } | null>(null);
@@ -130,7 +130,7 @@ function Breakdown({ data }: { data: { block: any; signals: any } }) {
         steps={[
           ["You guess the exact block number before the round opens", ""],
           ["When the round settles, the chain's current block number is taken", `#${block.number.toLocaleString()}`],
-          ["If your guess === that block number, you win 50× your stake", `Stake 0.01 → Win 0.50 zkLTC`],
+          ["If your guess === that block number, you win 50× your stake", `Stake 0.01 → Win 0.50 ETH`],
           ["No randomness from the hash only the block height decides", "block.number"],
         ]}
       />
