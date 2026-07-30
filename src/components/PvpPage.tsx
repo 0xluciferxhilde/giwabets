@@ -19,8 +19,8 @@ const TILES = 30;
 const CONTRACT_ADDRESS = "0x162ED453121f91eb3595e7f4513F78a0b5b02a81";
 const CHAIN_ID = 4441;
 const CHAIN_ID_HEX = "0x1159";
-const RPC_URL = "https://liteforge.rpc.caldera.xyz/http";
-const EXPLORER_TX = "https://liteforge.explorer.caldera.xyz/tx";
+const RPC_URL = "https://sepolia-rpc.giwa.io";
+const EXPLORER_TX = "https://sepolia-explorer.giwa.io/tx";
 const MIN_BET = 0.001;
 
 const BET_ABI = [
@@ -42,8 +42,8 @@ async function ensureLiteForge() {
           chainId: CHAIN_ID_HEX,
           chainName: "LiteForge",
           rpcUrls: [RPC_URL],
-          nativeCurrency: { name: "zkLTC", symbol: "zkLTC", decimals: 18 },
-          blockExplorerUrls: ["https://liteforge.explorer.caldera.xyz"],
+          nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
+          blockExplorerUrls: ["https://sepolia-explorer.giwa.io"],
         }],
       });
     } else {
@@ -435,7 +435,7 @@ export default function PvpPage({ onBack, onAbout }: { onBack: () => void; onAbo
   const placeBetsForTiles = React.useCallback(async (tiles: number[], amt: number) => {
     if (!addr || tiles.length === 0) return;
     if (!(amt >= MIN_BET)) {
-      setToast(`❌ Minimum bet is ${MIN_BET} zkLTC`);
+      setToast(`❌ Minimum bet is ${MIN_BET} ETH`);
       setTimeout(() => setToast(null), 3500);
       return;
     }

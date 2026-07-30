@@ -105,9 +105,9 @@ export default function MyBetsHistory({
   const netColor = (net: number) =>
     net > 0 ? "#16a34a" : net < 0 ? "#dc2626" : "#64748b";
   const netLabel = (net: number) =>
-    net > 0 ? `Net: +${net.toFixed(3)} zkLTC ✅`
-    : net < 0 ? `Net: ${net.toFixed(3)} zkLTC ❌`
-    : `Net: 0 zkLTC`;
+    net > 0 ? `Net: +${net.toFixed(3)} ETH ✅`
+    : net < 0 ? `Net: ${net.toFixed(3)} ETH ❌`
+    : `Net: 0 ETH`;
 
   return (
     <div style={{
@@ -170,7 +170,7 @@ export default function MyBetsHistory({
                     <div style={{ padding: "10px 14px 14px", borderTop: "1px dashed rgba(15,23,42,.18)", background: "rgba(15,23,42,.02)" }}>
                       <div style={{ fontSize: 12, color: "#475569", marginBottom: 8 }}>
                         Winning tile: <span style={{ color: "#16a34a", fontWeight: 900 }}>{r.winning_tile}</span>
-                        {" · "}Pool: <b>{r.total_pool.toFixed(3)} zkLTC</b>
+                        {" · "}Pool: <b>{r.total_pool.toFixed(3)} ETH</b>
                       </div>
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, fontSize: 12, fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}>
                         <div style={{ fontWeight: 800, color: "#0f172a", padding: "4px 6px", borderBottom: "1px solid rgba(15,23,42,.15)" }}>Tile</div>
@@ -190,12 +190,12 @@ export default function MyBetsHistory({
                         })}
                       </div>
                       <div style={{ marginTop: 10, fontSize: 12, display: "flex", flexDirection: "column", gap: 3 }}>
-                        <span>Total spent: <b>{r.totalSpent.toFixed(3)} zkLTC</b></span>
-                        <span>Total won: <b>{r.totalWon.toFixed(3)} zkLTC</b></span>
+                        <span>Total spent: <b>{r.totalSpent.toFixed(3)} ETH</b></span>
+                        <span>Total won: <b>{r.totalWon.toFixed(3)} ETH</b></span>
                         <span style={{ color: netColor(r.net), fontWeight: 800 }}>
-                          {r.net > 0 ? `Net profit: +${r.net.toFixed(3)} zkLTC`
-                            : r.net < 0 ? `Net loss: ${r.net.toFixed(3)} zkLTC`
-                            : "Net: 0 zkLTC"}
+                          {r.net > 0 ? `Net profit: +${r.net.toFixed(3)} ETH`
+                            : r.net < 0 ? `Net loss: ${r.net.toFixed(3)} ETH`
+                            : "Net: 0 ETH"}
                         </span>
                       </div>
                     </div>

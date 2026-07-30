@@ -6,7 +6,7 @@ export default function Coin({ size = 16, style }: { size?: number; style?: Reac
   return (
     <img
       src={URL}
-      alt="zkLTC"
+      alt="ETH"
       width={size}
       height={size}
       style={{

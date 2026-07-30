@@ -26,7 +26,7 @@ export default function DemoWidget() {
       </div>
 
       <div className="demo-body">
-        <p className="demo-q">If you bet 0.01 zkLTC on this block being…</p>
+        <p className="demo-q">If you bet 0.01 ETH on this block being…</p>
         <div className="demo-picks">
           <button className={`pick up ${pick === "even" ? "sel" : ""}`} onClick={() => { setPick("even"); setRevealed(false); }}>EVEN</button>
           <button className={`pick down ${pick === "odd" ? "sel" : ""}`} onClick={() => { setPick("odd"); setRevealed(false); }}>ODD</button>
@@ -43,9 +43,9 @@ export default function DemoWidget() {
               hash mod 2 = <b>{result.toUpperCase()}</b> &nbsp;→&nbsp; you picked <b>{pick.toUpperCase()}</b>
             </div>
             <div className={`demo-result ${win ? "w" : "l"}`}>
-              {win ? <>✓ YOU WIN · +<Coin size={14} /> 0.0196 zkLTC</> : "✗ You lose · hash was " + result.toUpperCase()}
+              {win ? <>✓ YOU WIN · +<Coin size={14} /> 0.0196 ETH</> : "✗ You lose · hash was " + result.toUpperCase()}
             </div>
-            <a className="pf-btn" href={`https://liteforge.explorer.caldera.xyz/block/${DEMO_BLOCK.number}`} target="_blank" rel="noreferrer">
+            <a className="pf-btn" href={`https://sepolia-explorer.giwa.io/block/${DEMO_BLOCK.number}`} target="_blank" rel="noreferrer">
               <Shield size={11} /> Verify on explorer
             </a>
             <button className="demo-retry" onClick={() => setRevealed(false)}><RotateCcw size={12} /> Try the other side</button>

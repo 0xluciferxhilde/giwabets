@@ -18,7 +18,7 @@ export type BetToastData =
   | { kind: "error"; message: string };
 
 const DURATION = 4000;
-const EXPLORER = "https://liteforge.explorer.caldera.xyz";
+const EXPLORER = "https://sepolia-explorer.giwa.io";
 
 export default function BetToast({
   data,

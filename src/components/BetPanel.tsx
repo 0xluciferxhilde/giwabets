@@ -193,7 +193,7 @@ export default function BetPanel({
       <div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, gap: 8, flexWrap: "wrap" }}>
           <div className="side-head" style={{ fontSize: 13, marginBottom: 0 }}>
-            {mode === "auto" ? "zkLTC" : "Amount"} <span style={{ color: "#64748b", fontWeight: 600 }}>· Min 0.01</span>
+            {mode === "auto" ? "ETH" : "Amount"} <span style={{ color: "#64748b", fontWeight: 600 }}>· Min 0.01</span>
           </div>
           <div style={{ display: "flex", gap: 6 }}>
             <QuickBtn label="+0.01" onClick={() => bumpAmt(0.01)} />
@@ -206,7 +206,7 @@ export default function BetPanel({
           </div>
         {mode === "manual" && (
           <div style={{ marginTop: 6, fontSize: 12, color: "#475569", fontWeight: 700 }}>
-            Total: <span style={{ color: "#0f172a", fontFamily: "ui-monospace,monospace" }}>{total.toFixed(4)} zkLTC</span> for {count} tile{count === 1 ? "" : "s"}
+            Total: <span style={{ color: "#0f172a", fontFamily: "ui-monospace,monospace" }}>{total.toFixed(4)} ETH</span> for {count} tile{count === 1 ? "" : "s"}
           </div>
         )}
       </div>
@@ -266,7 +266,7 @@ export default function BetPanel({
             </button>
           </div>
           <div style={{ fontSize: 11, color: "#64748b", lineHeight: 1.45, marginTop: -6 }}>
-            Round zkLTC rewards can be added back to this auto budget before the next round.
+            Round ETH rewards can be added back to this auto budget before the next round.
           </div>
           <div style={{ borderTop: "1px solid rgba(15,23,42,.10)", paddingTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
             <Row label="Total per round" value={total.toFixed(5)} />
@@ -312,9 +312,9 @@ export default function BetPanel({
           {!walletConnected ? "Connect Wallet" :
             placing ? "Placing…" :
             count === 0 ? "Select Tiles" :
-            amt <= 0 ? "Enter zkLTC Amount" :
+            amt <= 0 ? "Enter ETH Amount" :
             lockedUI ? "Round Locked" :
-            `Place Bet · ${total.toFixed(3)} zkLTC`}
+            `Place Bet · ${total.toFixed(3)} ETH`}
         </button>
       ) : (
         autoActive ? (

@@ -28,7 +28,7 @@ export default function Home({ onEnter, onPvp }: { onEnter: () => void; onPvp?: 
           )}
         </div>
         <div className="hero-stats">
-          <div><b>0.01</b><span>zkLTC per bet</span></div>
+          <div><b>0.01</b><span>ETH per bet</span></div>
           <div><b>~0.2s</b><span>block time</span></div>
           <div><b>8</b><span>game modes</span></div>
           <div><b>100%</b><span>verifiable</span></div>
@@ -50,7 +50,7 @@ export default function Home({ onEnter, onPvp }: { onEnter: () => void; onPvp?: 
             <div className="num">2</div>
             <Dice5 size={22} />
             <h3>Choose your bet</h3>
-            <p>Coin flip, hi-lo, lucky digit, number 0-99, transaction over/under, gas, closest pool, or Perfect Block. Flat 0.01 zkLTC per bet, matched against real opponents.</p>
+            <p>Coin flip, hi-lo, lucky digit, number 0-99, transaction over/under, gas, closest pool, or Perfect Block. Flat 0.01 ETH per bet, matched against real opponents.</p>
           </div>
           <div className="step">
             <div className="num">3</div>
@@ -90,7 +90,7 @@ export default function Home({ onEnter, onPvp }: { onEnter: () => void; onPvp?: 
 
       <section className="cta-end">
         <h2>Ready to play?</h2>
-        <p>Connect your wallet, stake 0.01 zkLTC, and let the chain decide.</p>
+        <p>Connect your wallet, stake 0.01 ETH, and let the chain decide.</p>
         <button className="enter-btn" onClick={onEnter}>Enter Betting Zone <ArrowRight size={18} /></button>
       </section>
     </div>

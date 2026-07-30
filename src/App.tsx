@@ -226,7 +226,7 @@ export default function App() {
           <div className="item"><span className="k">Live Pot</span><span className="v" style={{ color: "#000", display: "inline-flex", alignItems: "center", gap: 6 }}><CoinImg /> {totalLiveStaked.toFixed(2)}</span></div>
           <div className="item"><span className="k">Players In Play</span><span className="v">{totalLivePlayers}</span></div>
           <div className="item"><span className="k">Active Rounds</span><span className="v">{rounds.length}</span></div>
-          <div className="item"><span className="k">Bet Size</span><span className="v" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><CoinImg /> 0.01 zkLTC</span></div>
+          <div className="item"><span className="k">Bet Size</span><span className="v" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><CoinImg /> 0.01 ETH</span></div>
           <div className="item"><span className="k">Block Time</span><span className="v">~0.2s</span></div>
         </div>
 
@@ -237,7 +237,7 @@ export default function App() {
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
             <div>
               <h1 className="page-title">Live Rounds</h1>
-              <p className="page-sub">Place bets while a round is open. Stack multiple modes, each is a flat 0.01 zkLTC.</p>
+              <p className="page-sub">Place bets while a round is open. Stack multiple modes, each is a flat 0.01 ETH.</p>
             </div>
             {addr && (
               <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>

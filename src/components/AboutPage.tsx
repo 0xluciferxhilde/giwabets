@@ -165,7 +165,7 @@ export default function AboutPage({ onBack }: { onBack: () => void }) {
             <PhaseCard n={1} label="OPEN" desc="Players bet on 1–30 tiles" color={BLUE} />
             <PhaseCard n={2} label="LOCK" desc="No more bets accepted" color={GOLD} />
             <PhaseCard n={3} label="DRAND" desc="Winning tile drawn publicly" color="#9333ea" />
-            <PhaseCard n={4} label="PAY" desc="Winners receive zkLTC" color={GREEN} />
+            <PhaseCard n={4} label="PAY" desc="Winners receive ETH" color={GREEN} />
           </div>
         </div>
 
@@ -197,17 +197,17 @@ Multiplier = payout / yourBet
         {/* SECTION 3 */}
         <div style={sectionWrap}>
           <h3 style={sectionTitle}>3 Interactive Payout Calculator</h3>
-          <Slider label="Your bet on winning tile" min={0.01} max={2.0} step={0.01} value={yourBet} onChange={setYourBet} suffix="zkLTC" />
-          <Slider label="Total bets on winning tile" min={yourBet} max={totalPool} step={0.01} value={winTileTotal} onChange={setWinTileTotal} suffix="zkLTC" />
-          <Slider label="Total pool this round" min={0.1} max={10.0} step={0.1} value={totalPool} onChange={setTotalPool} suffix="zkLTC" />
+          <Slider label="Your bet on winning tile" min={0.01} max={2.0} step={0.01} value={yourBet} onChange={setYourBet} suffix="ETH" />
+          <Slider label="Total bets on winning tile" min={yourBet} max={totalPool} step={0.01} value={winTileTotal} onChange={setWinTileTotal} suffix="ETH" />
+          <Slider label="Total pool this round" min={0.1} max={10.0} step={0.1} value={totalPool} onChange={setTotalPool} suffix="ETH" />
           <div className="about-grid-3" style={{ marginTop: 8 }}>
             <ResultCard label="Your share" value={`${(share * 100).toFixed(2)} %`} color={BLUE} />
-            <ResultCard label="Prize pool" value={`${prize.toFixed(3)} zkLTC`} />
-            <ResultCard label="Your payout" value={`${payout.toFixed(3)} zkLTC`} color={GOLD} />
+            <ResultCard label="Prize pool" value={`${prize.toFixed(3)} ETH`} />
+            <ResultCard label="Your payout" value={`${payout.toFixed(3)} ETH`} color={GOLD} />
             <ResultCard label="Multiplier" value={`${mult.toFixed(2)} ×`} color="#9333ea" />
             <ResultCard
               label="Net P&L"
-              value={`${pnl >= 0 ? "+" : "-"}${Math.abs(pnl).toFixed(3)} zkLTC`}
+              value={`${pnl >= 0 ? "+" : "-"}${Math.abs(pnl).toFixed(3)} ETH`}
               color={pnl >= 0 ? GREEN : RED}
             />
           </div>
@@ -326,7 +326,7 @@ More tiles  = low variance (steady small returns)`}</pre>
             <div style={{ ...card }}>
               <div style={{ fontWeight: 900, fontSize: 14, marginBottom: 8, color: INK }}>Normal Round</div>
               <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-                <div style={{ color: GREEN }}>✓ zkLTC payout to winners</div>
+                <div style={{ color: GREEN }}>✓ ETH payout to winners</div>
                 <div style={{ color: RED }}>✗ No bonus points</div>
               </div>
             </div>
@@ -337,7 +337,7 @@ More tiles  = low variance (steady small returns)`}</pre>
             }}>
               <div style={{ fontWeight: 900, fontSize: 14, marginBottom: 8, color: GOLD }}>🎉 BONANZA Round</div>
               <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-                <div style={{ color: GREEN }}>✓ zkLTC payout to winners</div>
+                <div style={{ color: GREEN }}>✓ ETH payout to winners</div>
                 <div style={{ color: GREEN }}>✓ +10,000 LitDEX Points to ALL winners</div>
                 <div style={{ color: MUTED, fontSize: 12 }}>(awarded on-chain, verifiable by tx hash)</div>
               </div>
