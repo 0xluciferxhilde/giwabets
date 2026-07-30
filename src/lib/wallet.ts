@@ -49,6 +49,8 @@ export async function ensureChain() {
           blockExplorerUrls: [EXPLORER_URL],
         }],
       });
+      // some wallets add without switching
+      await eth.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CHAIN_ID_HEX }] }).catch(() => {});
     } else { throw e; }
   }
 }
