@@ -27,7 +27,7 @@ export default function Home({ onEnter }: { onEnter: () => void }) {
           <div><b>~0.2s</b><span>block time</span></div>
           <div><b>8</b><span>game modes</span></div>
           <div><b>100%</b><span>verifiable</span></div>
-          <div><b>PVP</b><span>no house edge</span></div>
+          
         </div>
       </section>
 
