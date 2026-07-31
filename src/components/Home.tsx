@@ -70,7 +70,7 @@ export default function Home({ onEnter }: { onEnter: () => void }) {
           <div className="d"><b>Even / Odd</b><span>hash mod 2 → Coin Flip</span></div>
           <div className="d"><b>Last digit</b><span>0-f → Lucky Digit & Hi-Lo</span></div>
           <div className="d"><b>mod 100</b><span>0-99 → Number game</span></div>
-          <div className="d"><b>mod 1000</b><span>0-999 → Closest (PvP)</span></div>
+          <div className="d"><b>mod 1000</b><span>0-999 → Closest</span></div>
           <div className="d"><b>Tx count</b><span>→ Over / Under</span></div>
           <div className="d"><b>Gas used</b><span>→ Over / Under</span></div>
         </div>
