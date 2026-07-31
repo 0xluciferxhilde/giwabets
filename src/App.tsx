@@ -16,29 +16,6 @@ import WinnersMarquee from "./components/WinnersMarquee";
 import HeaderStats from "./components/HeaderStats";
 import PvpPage from "./components/PvpPage";
 import AboutPage from "./components/AboutPage";
-import { sounds } from "./lib/pvpSounds";
-
-function PvpButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        display: "inline-flex", alignItems: "center", gap: 8,
-        background: "#7c3aed", color: "#fff", border: "3px solid #000",
-        borderRadius: 12, padding: "12px 20px", fontWeight: 900,
-        fontFamily: "'Space Grotesk',system-ui,sans-serif",
-        letterSpacing: ".08em", textTransform: "uppercase",
-        boxShadow: "5px 5px 0 0 rgba(0,0,0,.9)", cursor: "pointer",
-        fontSize: 13, lineHeight: 1,
-      }}
-      onMouseDown={(e) => { sounds.unlock(); (e.currentTarget as HTMLButtonElement).style.transform = "translate(3px,3px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "2px 2px 0 0 rgba(0,0,0,.9)"; }}
-      onMouseUp={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = ""; (e.currentTarget as HTMLButtonElement).style.boxShadow = "5px 5px 0 0 rgba(0,0,0,.9)"; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = ""; (e.currentTarget as HTMLButtonElement).style.boxShadow = "5px 5px 0 0 rgba(0,0,0,.9)"; }}
-    >
-      <span style={{ fontSize: 14 }}>⚔</span> PVP
-    </button>
-  );
-}
 
 export default function App() {
   const initialView = (): "home" | "zone" | "pvp" | "about" => {
@@ -191,7 +168,7 @@ export default function App() {
               <button className="btn btn-primary btn-sm" onClick={() => goView("zone")}>Enter Zone</button>
             </div>
           </div>
-          <Home onEnter={() => goView("zone")} onPvp={() => goView("pvp")} />
+          <Home onEnter={() => goView("zone")} />
         </div>
         {pfBlock != null && <ProvablyFair block={pfBlock} onClose={() => setPfBlock(null)} />}
       </>
@@ -210,7 +187,6 @@ export default function App() {
           </div>
           <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 10 }}>
             <HeaderStats />
-            <PvpButton onClick={() => goView("pvp")} />
           </div>
           <div className="top-right">
             <div className="live-head"><span className="pulse" /> Block <b className="mono" style={{ marginLeft: 4 }}>#{head?.toLocaleString() ?? "…"}</b></div>

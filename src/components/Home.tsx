@@ -2,7 +2,7 @@ import React from "react";
 import { Zap, Shield, Clock, Dice5, ArrowRight, Blocks } from "lucide-react";
 import DemoWidget from "./DemoWidget";
 
-export default function Home({ onEnter, onPvp }: { onEnter: () => void; onPvp?: () => void }) {
+export default function Home({ onEnter }: { onEnter: () => void }) {
   return (
     <div className="home">
       {/* hero */}
@@ -21,11 +21,6 @@ export default function Home({ onEnter, onPvp }: { onEnter: () => void; onPvp?: 
           <button className="enter-btn" onClick={onEnter}>
             Enter Betting Zone <ArrowRight size={18} />
           </button>
-          {onPvp && (
-            <button className="enter-btn" onClick={onPvp}>
-              Enter PVP Zone <ArrowRight size={18} />
-            </button>
-          )}
         </div>
         <div className="hero-stats">
           <div><b>0.01</b><span>ETH per bet</span></div>
