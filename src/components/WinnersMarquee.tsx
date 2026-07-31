@@ -42,12 +42,11 @@ export default function WinnersMarquee() {
   }, []);
 
   const items = wins.length === 0
-    ? [<span key="empty">🎮 Be the first to win on BetsOnBlock!</span>]
+    ? [<span key="empty">🎮 Be the first to win on GiwaBets!</span>]
     : wins.map((w, i) => (
         <span key={i}>
           🏆 <span style={{ fontFamily: "var(--mono)" }}>{shortAddr(w.wallet)}</span>{" "}
           won <span style={{ color: "#f59e0b", fontWeight: 800 }}>+{w.payout.toFixed(4)} ETH</span>{" "}
-          <span style={{ color: "#22c55e", fontWeight: 800 }}>+ 20 pts</span>{" "}
           on {MODE_MAP[w.mode]?.label || w.mode} at block{" "}
           <span style={{ fontFamily: "var(--mono)" }}>#{w.block.toLocaleString()}</span>
         </span>

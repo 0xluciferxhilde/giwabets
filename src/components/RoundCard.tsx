@@ -291,7 +291,7 @@ export default function RoundCard({
                   background: "rgba(34,211,238,.14)", color: "#22d3ee",
                   border: "1px solid rgba(34,211,238,.45)",
                   padding: "3px 8px", borderRadius: 999,
-                }}>🎯 PVP POOL</span>
+                }}>🎯 POOL</span>
               </div>
               <div className="pm-banks">
                 <div>
@@ -313,7 +313,7 @@ export default function RoundCard({
                   background: "rgba(34,211,238,.14)", color: "#22d3ee",
                   border: "1px solid rgba(34,211,238,.45)",
                   padding: "3px 8px", borderRadius: 999,
-                }}>🎯 PVP POOL</span>
+                }}>🎯 POOL</span>
               </div>
               <div className="pm-banks">
                 <div>

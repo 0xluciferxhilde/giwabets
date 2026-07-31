@@ -2,7 +2,7 @@ import React from "react";
 import { Zap, Shield, Clock, Dice5, ArrowRight, Blocks } from "lucide-react";
 import DemoWidget from "./DemoWidget";
 
-export default function Home({ onEnter, onPvp }: { onEnter: () => void; onPvp?: () => void }) {
+export default function Home({ onEnter }: { onEnter: () => void }) {
   return (
     <div className="home">
       {/* hero */}
@@ -10,7 +10,7 @@ export default function Home({ onEnter, onPvp }: { onEnter: () => void; onPvp?: 
         <img
           className="hero-logo"
           src="https://raw.githubusercontent.com/dopedopex/your-friendly-helper/main/logo.png"
-          alt="BetsOnBlock"
+          alt="GiwaBets"
         />
         <h1>Bet on the<br /><span className="grad">next block.</span></h1>
         <p className="hero-sub">
@@ -21,18 +21,13 @@ export default function Home({ onEnter, onPvp }: { onEnter: () => void; onPvp?: 
           <button className="enter-btn" onClick={onEnter}>
             Enter Betting Zone <ArrowRight size={18} />
           </button>
-          {onPvp && (
-            <button className="enter-btn" onClick={onPvp}>
-              Enter PVP Zone <ArrowRight size={18} />
-            </button>
-          )}
         </div>
         <div className="hero-stats">
           <div><b>0.01</b><span>ETH per bet</span></div>
           <div><b>~0.2s</b><span>block time</span></div>
           <div><b>8</b><span>game modes</span></div>
           <div><b>100%</b><span>verifiable</span></div>
-          <div><b>PVP</b><span>no house edge</span></div>
+          
         </div>
       </section>
 
@@ -75,7 +70,7 @@ export default function Home({ onEnter, onPvp }: { onEnter: () => void; onPvp?: 
           <div className="d"><b>Even / Odd</b><span>hash mod 2 → Coin Flip</span></div>
           <div className="d"><b>Last digit</b><span>0-f → Lucky Digit & Hi-Lo</span></div>
           <div className="d"><b>mod 100</b><span>0-99 → Number game</span></div>
-          <div className="d"><b>mod 1000</b><span>0-999 → Closest (PvP)</span></div>
+          <div className="d"><b>mod 1000</b><span>0-999 → Closest</span></div>
           <div className="d"><b>Tx count</b><span>→ Over / Under</span></div>
           <div className="d"><b>Gas used</b><span>→ Over / Under</span></div>
         </div>
