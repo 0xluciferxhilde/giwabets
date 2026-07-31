@@ -52,8 +52,8 @@ export function deriveSignals(block) {
  * Each mode: how the user's `pick` is checked against the block, the payout
  * multiplier, and a human description for the verify panel.
  */
-export const TX_LINE = 5;        // Txn Over/Under threshold
-export const GAS_LINE = 500000;  // Gas Over/Under threshold
+export const TX_LINE = 21;        // Txn Over/Under threshold
+export const GAS_LINE = 2000000;  // Gas Over/Under threshold
 export const PERFECT_BLOCK_WINDOW_MS = 2 * 60 * 1000; // first 2 minutes of a round
 export const PERFECT_BLOCK_MULTIPLIER = 50;           // 50x reward for exact guess
 

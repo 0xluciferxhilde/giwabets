@@ -2,15 +2,15 @@ import React from "react";
 import { motion } from "framer-motion";
 import { X, Sparkles } from "lucide-react";
 import { api, type RoundView } from "../lib/api";
-import { MODE_MAP, signals as deriveSignals, type ModeId } from "../lib/modes";
+import { MODE_MAP, signals as deriveSignals, TX_LINE, GAS_LINE, type ModeId } from "../lib/modes";
 
 const EXPLANATIONS: Record<ModeId, string> = {
   coinflip: "Block hash last digit — EVEN (0,2,4,6,8) or ODD (1,3,5,7,9,a,b,c,d,e,f).",
   hilo: "Last hex digit LOW (0-7) or HIGH (8-f).",
   digit: "Guess the exact last hex digit of the block hash (0-f). Winners share the pool.",
   number: "Guess hash mod 100 (0-99). Winners share the pool.",
-  txou: "More than 5 transactions in the block? OVER or UNDER.",
-  gasou: "Will gas used exceed 500,000? OVER or UNDER.",
+  txou: `More than ${TX_LINE} transactions in the block? OVER or UNDER.`,
+  gasou: `Will gas used exceed ${GAS_LINE.toLocaleString()}? OVER or UNDER.`,
   closest: "Guess hash mod 1000 (0-999). Closest player wins the whole pot.",
   perfectblock: "Guess the exact block number. Winners share the pool.",
 };
