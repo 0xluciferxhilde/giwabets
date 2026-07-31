@@ -1,6 +1,7 @@
 import React from "react";
 import { Shield, ExternalLink } from "lucide-react";
 import { api } from "../lib/api";
+import { TX_LINE, GAS_LINE } from "../lib/modes";
 
 const EXPLORER = "https://sepolia-explorer.giwa.io";
 
@@ -110,18 +111,18 @@ function Breakdown({ data }: { data: { block: any; signals: any } }) {
       />
 
       <Game
-        name="Txn Over/Under" result={block.txCount > 5 ? "OVER" : "UNDER"}
+        name="Txn Over/Under" result={block.txCount > TX_LINE ? "OVER" : "UNDER"}
         steps={[
           ["Count transactions in the block", String(block.txCount)],
-          ["Compare to the line of 5", `${block.txCount} ${block.txCount > 5 ? "> 5 → OVER" : "≤ 5 → UNDER"}`],
+          [`Compare to the line of ${TX_LINE}`, `${block.txCount} ${block.txCount > TX_LINE ? `> ${TX_LINE} → OVER` : `≤ ${TX_LINE} → UNDER`}`],
         ]}
       />
 
       <Game
-        name="Gas Over/Under" result={Number(block.gasUsed) > 500000 ? "OVER" : "UNDER"}
+        name="Gas Over/Under" result={Number(block.gasUsed) > GAS_LINE ? "OVER" : "UNDER"}
         steps={[
           ["Gas used by the block", Number(block.gasUsed).toLocaleString()],
-          ["Compare to the line of 500,000", `${Number(block.gasUsed).toLocaleString()} ${Number(block.gasUsed) > 500000 ? "> 500k → OVER" : "≤ 500k → UNDER"}`],
+          [`Compare to the line of ${GAS_LINE.toLocaleString()}`, `${Number(block.gasUsed).toLocaleString()} ${Number(block.gasUsed) > GAS_LINE ? "> 2M → OVER" : "≤ 2M → UNDER"}`],
         ]}
       />
 
