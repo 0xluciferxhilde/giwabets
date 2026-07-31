@@ -404,12 +404,6 @@ function BetCard({
             <button key={m.id} className="ybets-row" style={modeRow(active)} onClick={() => onModeClick(m.id)}>
               <span style={checkBox(active)}>{active && <Check size={14} strokeWidth={3} />}</span>
               <span>{m.label}</span>
-              {showPointsBadge && active && (
-                <span style={{ marginLeft: "auto", display: "inline-flex", gap: 4, alignItems: "center" }}>
-                  <span style={ptsPill("+10 pts")}>+10 pts</span>
-                  {bet?.win && <span style={ptsPill("+10 pts 🏆", true)}>+10 pts 🏆</span>}
-                </span>
-              )}
             </button>
           );
         })}
