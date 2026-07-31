@@ -1,6 +1,6 @@
 import React from "react";
 
-const URL = "https://raw.githubusercontent.com/dopedopex/your-friendly-helper/main/zkltc.jpg";
+const URL = "https://raw.githubusercontent.com/wholt-dev/koko-s-creative-corner/main/ethereum-eth-logo.png";
 
 export default function Coin({ size = 16, style }: { size?: number; style?: React.CSSProperties }) {
   return (

@@ -10,7 +10,7 @@ export default function Home({ onEnter, onPvp }: { onEnter: () => void; onPvp?: 
         <img
           className="hero-logo"
           src="https://raw.githubusercontent.com/dopedopex/your-friendly-helper/main/logo.png"
-          alt="BetsOnBlock"
+          alt="GiwaBets"
         />
         <h1>Bet on the<br /><span className="grad">next block.</span></h1>
         <p className="hero-sub">

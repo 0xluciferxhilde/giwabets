@@ -180,8 +180,8 @@ export default function App() {
         <div className="app zone-mode">
           <div className="topbar">
             <div className="logo">
-              <img src="https://raw.githubusercontent.com/dopedopex/your-friendly-helper/main/logo.png" alt="BetsOnBlock" width={36} height={36} style={{ borderRadius: 10, objectFit: "cover" }} />
-              <div><h1>Bets<b>On</b>Block</h1></div>
+              <img src="https://raw.githubusercontent.com/dopedopex/your-friendly-helper/main/logo.png" alt="GiwaBets" width={36} height={36} style={{ borderRadius: 10, objectFit: "cover" }} />
+              <div><h1>Giwa<b>Bets</b></h1></div>
             </div>
             <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 10 }}>
               <HeaderStats />
@@ -205,8 +205,8 @@ export default function App() {
       <div className="app zone-mode">
         <div className="topbar">
           <div className="logo" style={{ cursor: "pointer" }} onClick={() => goView("home")}>
-            <img src="https://raw.githubusercontent.com/dopedopex/your-friendly-helper/main/logo.png" alt="BetsOnBlock" width={36} height={36} style={{ borderRadius: 10, objectFit: "cover" }} />
-            <div><h1>Bets<b>On</b>Block</h1></div>
+            <img src="https://raw.githubusercontent.com/dopedopex/your-friendly-helper/main/logo.png" alt="GiwaBets" width={36} height={36} style={{ borderRadius: 10, objectFit: "cover" }} />
+            <div><h1>Giwa<b>Bets</b></h1></div>
           </div>
           <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 10 }}>
             <HeaderStats />
