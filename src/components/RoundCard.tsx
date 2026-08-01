@@ -1,16 +1,18 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Shield, Flame, Zap, ChevronLeft, ArrowUpRight, Blocks, Sparkles, HelpCircle } from "lucide-react";
-import { api, type RoundView } from "../lib/api";
+import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { type RoundView } from "../lib/api";
+import { GAME_BY_MODE, STAKE_WEI } from "../lib/contracts";
 import { MODES, HEX, signals, type ModeMeta, type ModeId } from "../lib/modes";
 import Coin from "./Coin";
 import ModeHelpModal from "./ModeHelpModal";
-import * as W from "../lib/wallet";
 import LeverSwitch from "./LeverSwitch";
 import BetToast, { type BetToastData } from "./BetToast";
 import PvpWheel from "./PvpWheel";
 
 const BET = 0.01;
+
 
 function fmtClock(ms: number) {
   const s = Math.max(0, Math.ceil(ms / 1000));
