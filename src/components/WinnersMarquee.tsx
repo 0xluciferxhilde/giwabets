@@ -1,5 +1,5 @@
 import React from "react";
-import { api } from "../lib/api";
+import { usePayouts } from "../lib/chain";
 import { MODE_MAP } from "../lib/modes";
 
 type Win = { wallet: string; payout: number; mode: string; block: number };
@@ -9,37 +9,8 @@ function shortAddr(a: string) {
 }
 
 export default function WinnersMarquee() {
-  const [wins, setWins] = React.useState<Win[]>([]);
+  const wins: Win[] = usePayouts(true);
 
-  React.useEffect(() => {
-    let alive = true;
-    const load = async () => {
-      try {
-        const h: any = await api.historyPage(1, 30).catch(() => null);
-        const list = (h && Array.isArray(h.history)) ? h.history : (await api.history(30)).history;
-        if (!alive) return;
-        const out: Win[] = [];
-        for (const r of list) {
-          const blockNum = r.result?.block?.number ?? r.targetBlock?.number;
-          if (!blockNum) continue;
-          const perBet = r.result?.perBet || [];
-          for (const b of perBet) {
-            if (b.win && b.payout > 0) {
-              out.push({ wallet: b.wallet, payout: b.payout, mode: b.mode, block: blockNum });
-            }
-          }
-          const cWinners = r.result?.closest?.winners || [];
-          for (const w of cWinners) {
-            if (w.payout > 0) out.push({ wallet: w.wallet, payout: w.payout, mode: "closest", block: blockNum });
-          }
-        }
-        setWins(out);
-      } catch { /* */ }
-    };
-    load();
-    const id = setInterval(load, 30000);
-    return () => { alive = false; clearInterval(id); };
-  }, []);
 
   const items = wins.length === 0
     ? [<span key="empty">🎮 Be the first to win on GiwaBets!</span>]
