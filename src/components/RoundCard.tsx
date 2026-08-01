@@ -1,16 +1,18 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Shield, Flame, Zap, ChevronLeft, ArrowUpRight, Blocks, Sparkles, HelpCircle } from "lucide-react";
-import { api, type RoundView } from "../lib/api";
+import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { type RoundView } from "../lib/api";
+import { GAME_BY_MODE, STAKE_WEI } from "../lib/contracts";
 import { MODES, HEX, signals, type ModeMeta, type ModeId } from "../lib/modes";
 import Coin from "./Coin";
 import ModeHelpModal from "./ModeHelpModal";
-import * as W from "../lib/wallet";
 import LeverSwitch from "./LeverSwitch";
 import BetToast, { type BetToastData } from "./BetToast";
 import PvpWheel from "./PvpWheel";
 
 const BET = 0.01;
+
 
 function fmtClock(ms: number) {
   const s = Math.max(0, Math.ceil(ms / 1000));
@@ -125,44 +127,70 @@ export default function RoundCard({
     mode.kind === "digit" ? HEX.includes(finalPick) :
     mode.kind === "perfectblock" ? (pbPrefix !== "" && num.length === 3) :
     finalPick !== "";
-  const canConfirm = isOpen && !!addr && validPick && !placing && !modeAlreadyBet;
+  const game = GAME_BY_MODE[mode.id];
+  const modeRoundId = round.modeRoundIds?.[mode.id];
+  const canConfirm = isOpen && !!addr && validPick && !placing && !modeAlreadyBet && modeRoundId != null;
+
+  // --- on-chain bet: placeBet(roundId, pick) with the 0.01 ETH stake attached ---
+  const { writeContractAsync } = useWriteContract();
+  const [pendingTx, setPendingTx] = React.useState<`0x${string}` | undefined>(undefined);
+  const [pendingBet, setPendingBet] = React.useState<{ mode: string; pick: string } | null>(null);
+  const { isSuccess: txConfirmed, isError: txFailed } =
+    useWaitForTransactionReceipt({ hash: pendingTx });
+
+  React.useEffect(() => {
+    if (!txConfirmed || !pendingTx || !pendingBet) return;
+    setMyBets((p) => [...p, pendingBet]);
+    onBet({ mode: pendingBet.mode, pick: pendingBet.pick, txHash: pendingTx });
+    const last4 = (addr || "").slice(-4);
+    const ts4 = String(Date.now()).slice(-4);
+    setToast({
+      kind: "success",
+      mode: pendingBet.mode,
+      pick: pendingBet.pick.toUpperCase(),
+      stake: BET,
+      roundId: round.id,
+      refId: `GB-${round.id}-${last4}-${ts4}`,
+      blockNumber: head != null ? head + Math.round(msToSettle / 200) : null,
+      roundSettled: false,
+    });
+    setPendingTx(undefined);
+    setPendingBet(null);
+    setPlacing(false);
+    setShowBet(false); setNum("");
+    setLeverPulled(null); setConfirmPulled(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [txConfirmed]);
+
+  React.useEffect(() => {
+    if (!txFailed) return;
+    setToast({ kind: "error", message: "Transaction reverted on-chain." });
+    setPendingTx(undefined); setPendingBet(null);
+    setPlacing(false); setConfirmPulled(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [txFailed]);
 
   const confirm = async () => {
-    if (!canConfirm) return;
+    if (!canConfirm || !game) return;
     setPlacing(true);
     setConfirmPulled(true);
     try {
-      const txHash = await W.sendStake();
-      const res = await api.bet({ wallet: addr!, roundId: round.id, mode: mode.id, pick: String(finalPick), stake: BET, tx_hash: txHash });
-      if (res.ok) {
-        setMyBets((p) => [...p, { mode: mode.id, pick: String(finalPick) }]);
-        onBet({ mode: mode.id, pick: String(finalPick), txHash });
-        const last4 = addr!.slice(-4);
-        const ts4 = String(Date.now()).slice(-4);
-        setToast({
-          kind: "success",
-          mode: mode.id,
-          pick: String(finalPick).toUpperCase(),
-          stake: BET,
-          roundId: round.id,
-          refId: `BOB-${round.id}-${last4}-${ts4}`,
-          blockNumber: head != null ? head + Math.round(msToSettle / 200) : null,
-          roundSettled: false,
-        });
-        // close after a brief moment so the user sees the lever animation finish
-        setTimeout(() => {
-          setShowBet(false); setNum("");
-          setLeverPulled(null); setConfirmPulled(false);
-        }, 700);
-      } else {
-        setConfirmPulled(false);
-        setToast({ kind: "error", message: res.error || "Bet was rejected." });
-      }
+      const hash = await writeContractAsync({
+        address: game.address,
+        abi: game.abi,
+        functionName: "placeBet",
+        args: [BigInt(modeRoundId!), game.encodePick(String(finalPick))],
+        value: STAKE_WEI,
+      });
+      setPendingBet({ mode: mode.id, pick: String(finalPick) });
+      setPendingTx(hash);
     } catch (e: any) {
       setConfirmPulled(false);
-      setToast({ kind: "error", message: e?.message || "Transaction failed." });
-    } finally { setPlacing(false); }
+      setPlacing(false);
+      setToast({ kind: "error", message: e?.shortMessage || e?.message || "Transaction failed." });
+    }
   };
+
 
   const clockMs = isOpen ? msToLock : msToSettle;
   const clockCls = clockMs < 30000 ? "danger" : clockMs < 90000 ? "warn" : "";

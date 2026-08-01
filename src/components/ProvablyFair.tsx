@@ -1,17 +1,17 @@
 import React from "react";
 import { Shield, ExternalLink } from "lucide-react";
-import { api } from "../lib/api";
-import { TX_LINE, GAS_LINE } from "../lib/modes";
+import { useBlockFacts } from "../lib/chain";
+import { TX_LINE, GAS_LINE, signals as deriveSignals } from "../lib/modes";
 
 const EXPLORER = "https://sepolia-explorer.giwa.io";
 
 export default function ProvablyFair({ block, onClose }: { block: number; onClose: () => void }) {
-  const [data, setData] = React.useState<{ block: any; signals: any } | null>(null);
-  const [err, setErr] = React.useState("");
+  const { data: raw, err } = useBlockFacts(block);
+  const data = React.useMemo(
+    () => (raw ? { block: raw.block, signals: deriveSignals(raw.block) } : null),
+    [raw],
+  );
 
-  React.useEffect(() => {
-    api.verify(block).then(setData).catch((e) => setErr(e.message || "failed"));
-  }, [block]);
 
   return (
     <div className="modal-bg" onClick={onClose}>

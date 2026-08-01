@@ -1,6 +1,7 @@
 import React from "react";
 import { Shield, History, ArrowLeft, Wallet2 } from "lucide-react";
-import { api, type RoundView } from "./lib/api";
+import { type RoundView } from "./lib/api";
+import { useOnchainRounds, useHead } from "./lib/chain";
 import { useAccount, useBalance } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
@@ -42,11 +43,7 @@ export default function App() {
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
   }, []);
-  const [rounds, setRounds] = React.useState<RoundView[]>([]);
-  const [history, setHistory] = React.useState<RoundView[]>([]);
   const [historyPage, setHistoryPage] = React.useState(1);
-  const [historyPages, setHistoryPages] = React.useState(1);
-  const [head, setHead] = React.useState<number | null>(null);
   const [pfBlock, setPfBlock] = React.useState<number | null>(null);
   const [liveBets, setLiveBets] = React.useState<LiveBet[]>([]);
   const [showYourBets, setShowYourBets] = React.useState(false);
@@ -58,69 +55,24 @@ export default function App() {
   const addr = isConnected && address ? address.toLowerCase() : null;
   const bal = balance ? Number(balance.formatted) : 0;
 
-  // poll live rounds while in the zone
-  React.useEffect(() => {
-    if (view !== "zone") return;
-    let alive = true;
-    const load = async () => {
-      try {
-        const r = await api.rounds();
-        if (!alive) return;
-        setRounds(r.rounds);
-      } catch { /* */ }
-    };
-    load();
-    const id = setInterval(load, 2000);
-    return () => { alive = false; clearInterval(id); };
-  }, [view]);
+  // ===== everything below comes straight from the game contracts =====
+  const inZone = view === "zone";
+  const { live: rounds, history: allHistory, refresh } = useOnchainRounds(inZone);
+  const head = useHead(inZone);
 
-  // recent blocks: paginated, refresh current page every 30s, mount → page 1
-  React.useEffect(() => {
-    if (view !== "zone") return;
-    setHistoryPage(1);
-  }, [view]);
+  const HISTORY_PER_PAGE = 10;
+  const historyPages = Math.max(1, Math.ceil(allHistory.length / HISTORY_PER_PAGE));
+  const history = allHistory.slice((historyPage - 1) * HISTORY_PER_PAGE, historyPage * HISTORY_PER_PAGE);
 
-  React.useEffect(() => {
-    if (view !== "zone") return;
-    let alive = true;
-    const load = async () => {
-      try {
-        // try paginated endpoint first; fall back to legacy ?n=
-        const h: any = await api.historyPage(historyPage, 10).catch(() => null);
-        if (h && Array.isArray(h.history)) {
-          if (!alive) return;
-          setHistory(h.history);
-          setHistoryPages(h.pages || 1);
-          return;
-        }
-        const legacy = await api.history(10);
-        if (!alive) return;
-        setHistory(legacy.history);
-        setHistoryPages(1);
-      } catch { /* */ }
-    };
-    load();
-    const id = setInterval(load, 30000);
-    return () => { alive = false; clearInterval(id); };
-  }, [view, historyPage]);
+  React.useEffect(() => { if (inZone) setHistoryPage(1); }, [inZone]);
 
   // prune live bets whose round is no longer active (settled → shows up in ended).
-  // never clear ended history.
   React.useEffect(() => {
     if (rounds.length === 0) return;
     const active = new Set(rounds.map((r) => r.id));
     setLiveBets((prev) => prev.filter((b) => active.has(b.roundId)));
   }, [rounds]);
 
-  // live head ticker
-  React.useEffect(() => {
-    if (view !== "zone") return;
-    let alive = true;
-    const t = async () => { try { const h = await api.head(); if (alive) setHead(h.block); } catch { /* */ } };
-    t();
-    const id = setInterval(t, 1500);
-    return () => { alive = false; clearInterval(id); };
-  }, [view]);
 
   // wallet change → full reset (clear live bets, force remount of round cards to reset mode/picks)
   const [resetKey, setResetKey] = React.useState(0);
@@ -138,10 +90,13 @@ export default function App() {
   const handleBet = (roundId: number, i: { mode: string; pick: string }) => {
     setLiveBets((p) => [...p, { roundId, mode: i.mode, pick: i.pick, stake: 0.01, placedAt: Date.now() }]);
     refetchBal();
+    refresh();
   };
 
   const totalLiveStaked = rounds.reduce((s, r) => s + r.totalStaked, 0);
   const totalLivePlayers = rounds.reduce((s, r) => s + r.players, 0);
+  const totalBetsAllTime = [...rounds, ...allHistory].reduce((s, r) => s + r.totalBets, 0);
+
 
   if (view === "about") {
     return <AboutPage onBack={() => goView("pvp")} />;
@@ -161,7 +116,7 @@ export default function App() {
               <div><h1>Giwa<b>Bets</b></h1></div>
             </div>
             <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 10 }}>
-              <HeaderStats />
+              <HeaderStats totalBets={totalBetsAllTime} />
             </div>
             <div className="top-right">
               <div className="live-head"><span className="pulse" /> Block <b className="mono" style={{ marginLeft: 4 }}>#{head?.toLocaleString() ?? "…"}</b></div>
@@ -186,7 +141,7 @@ export default function App() {
             <div><h1>Giwa<b>Bets</b></h1></div>
           </div>
           <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 10 }}>
-            <HeaderStats />
+            <HeaderStats totalBets={totalBetsAllTime} />
           </div>
           <div className="top-right">
             <div className="live-head"><span className="pulse" /> Block <b className="mono" style={{ marginLeft: 4 }}>#{head?.toLocaleString() ?? "…"}</b></div>
