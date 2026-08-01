@@ -1,6 +1,7 @@
 import React from "react";
 import { Shield, History, ArrowLeft, Wallet2 } from "lucide-react";
-import { api, type RoundView } from "./lib/api";
+import { type RoundView } from "./lib/api";
+import { useOnchainRounds, useHead } from "./lib/chain";
 import { useAccount, useBalance } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
