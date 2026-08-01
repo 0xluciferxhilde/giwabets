@@ -79,6 +79,18 @@ export default function App() {
     [walletBets],
   );
 
+  const betsByRound = React.useMemo(() => {
+    const map: Record<number, Array<{ mode: string; pick: string }>> = {};
+    walletBets
+      .filter((b) => !b.settled && b.roundKey > 0)
+      .forEach((b) => {
+        (map[b.roundKey] ||= []).push({ mode: b.mode, pick: b.pick });
+      });
+    return map;
+  }, [walletBets]);
+
+
+
   const HISTORY_PER_PAGE = 10;
   const historyPages = Math.max(1, Math.ceil(allHistory.length / HISTORY_PER_PAGE));
   const history = allHistory.slice((historyPage - 1) * HISTORY_PER_PAGE, historyPage * HISTORY_PER_PAGE);
