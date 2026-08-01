@@ -90,10 +90,13 @@ export default function App() {
   const handleBet = (roundId: number, i: { mode: string; pick: string }) => {
     setLiveBets((p) => [...p, { roundId, mode: i.mode, pick: i.pick, stake: 0.01, placedAt: Date.now() }]);
     refetchBal();
+    refresh();
   };
 
   const totalLiveStaked = rounds.reduce((s, r) => s + r.totalStaked, 0);
   const totalLivePlayers = rounds.reduce((s, r) => s + r.players, 0);
+  const totalBetsAllTime = [...rounds, ...allHistory].reduce((s, r) => s + r.totalBets, 0);
+
 
   if (view === "about") {
     return <AboutPage onBack={() => goView("pvp")} />;
