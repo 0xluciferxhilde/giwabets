@@ -1,4 +1,5 @@
-import { API_BASE } from "../lib/config";
+import { usePublicClient } from "wagmi";
+import { useWalletBets } from "../lib/chain";
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Search, ExternalLink } from "lucide-react";
