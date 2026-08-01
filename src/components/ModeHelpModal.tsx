@@ -1,7 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { X, Sparkles } from "lucide-react";
-import { api, type RoundView } from "../lib/api";
+import { type RoundView } from "../lib/api";
+import { useOnchainRounds } from "../lib/chain";
 import { MODE_MAP, signals as deriveSignals, TX_LINE, GAS_LINE, type ModeId } from "../lib/modes";
 
 const EXPLANATIONS: Record<ModeId, string> = {
