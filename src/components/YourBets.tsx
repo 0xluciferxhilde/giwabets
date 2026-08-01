@@ -58,31 +58,23 @@ export default function YourBets({
 }) {
   const [tab, setTab] = React.useState<"live" | "ended">("live");
   const [ended, setEnded] = React.useState<EndedBet[]>([]);
-  const [loading, setLoading] = React.useState(false);
+  const [loading] = React.useState(false);
   const [expanded, setExpanded] = React.useState<number | null>(null);
   const [verifyCache, setVerifyCache] = React.useState<Record<number, any>>({});
   const [livePage, setLivePage] = React.useState(0);
   const [endedPage, setEndedPage] = React.useState(0);
   const now = useNow();
+  const client = usePublicClient();
 
-  React.useEffect(() => {
-    // Never clear ended on disconnect — fetch fresh whenever address present.
-    if (!address) return;
-    let alive = true;
-    const load = async () => {
-      try {
-        setLoading(true);
-        const r = await fetch(`${API_BASE}/api/bets/${address}`);
-        if (!r.ok) return;
-        const j = await r.json();
-        if (alive) setEnded(Array.isArray(j.bets) ? j.bets : []);
-      } catch { /* */ }
-      finally { if (alive) setLoading(false); }
-    };
-    load();
-    const id = setInterval(load, 30000);
-    return () => { alive = false; clearInterval(id); };
-  }, [address]);
+  // settled bets, straight from the game contracts' events
+  const chainBets = useWalletBets(address);
+  const ended: EndedBet[] = React.useMemo(
+    () => chainBets.filter((b) => b.targetBlock > 0).map((b) => ({
+      roundId: b.roundId, block: b.targetBlock, mode: b.mode, pick: b.pick,
+      stake: b.stake, win: b.win, payout: b.payout, settledAt: b.settledAt,
+    })),
+    [chainBets],
+  );
 
   // Clamp current page when underlying arrays shrink.
   const liveTotalPages = Math.max(1, Math.ceil(liveBets.length / PAGE_SIZE));
@@ -91,16 +83,18 @@ export default function YourBets({
   React.useEffect(() => { if (endedPage >= endedTotalPages) setEndedPage(endedTotalPages - 1); }, [endedPage, endedTotalPages]);
 
   const fetchVerify = async (block: number) => {
-    if (verifyCache[block]) return;
+    if (verifyCache[block] || !client) return;
     try {
-      const r = await fetch(`${API_BASE}/api/verify/${block}`);
-      if (!r.ok) return;
-      const j = await r.json();
-      setVerifyCache((p) => ({ ...p, [block]: j }));
+      const b = await client.getBlock({ blockNumber: BigInt(block) });
+      const info = {
+        number: Number(b.number), hash: b.hash as string,
+        txCount: b.transactions.length, gasUsed: String(b.gasUsed),
+      };
+      setVerifyCache((p) => ({ ...p, [block]: { block: info, signals: deriveSignals(info) } }));
     } catch { /* */ }
   };
 
-  const toggle = (idx: number, block: number) => {
+
     setExpanded(expanded === idx ? null : idx);
     if (expanded !== idx) fetchVerify(block);
   };
