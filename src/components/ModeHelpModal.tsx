@@ -116,21 +116,10 @@ function computeStats(mode: ModeId, history: RoundView[]): Stats {
 }
 
 export default function ModeHelpModal({ modeId, onClose }: { modeId: ModeId; onClose: () => void }) {
-  const [history, setHistory] = React.useState<RoundView[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const { history } = useOnchainRounds(true);
   const meta = MODE_MAP[modeId];
+  const loading = history.length === 0;
 
-  React.useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        const h = await api.history(100);
-        if (alive) setHistory(h.history || []);
-      } catch { /* */ }
-      finally { if (alive) setLoading(false); }
-    })();
-    return () => { alive = false; };
-  }, []);
 
   const stats = computeStats(modeId, history);
 
