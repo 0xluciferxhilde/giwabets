@@ -18,7 +18,7 @@ type Props = {
 const PAGE_SIZE = 2;
 
 
-export default function RoundsCarousel({ rounds, addr, head, onNeedConnect, onOpenPF, onBet }: Props) {
+export default function RoundsCarousel({ rounds, addr, head, betsByRound, onNeedConnect, onOpenPF, onBet }: Props) {
   const pages = Math.max(1, Math.ceil(rounds.length / PAGE_SIZE));
   const [page, setPage] = React.useState(0);
 
@@ -64,10 +64,12 @@ export default function RoundsCarousel({ rounds, addr, head, onNeedConnect, onOp
                         slot={globalIdx === 0 ? "closing" : "open"}
                         addr={addr}
                         head={head}
+                        chainBets={betsByRound?.[r.id]}
                         onNeedConnect={onNeedConnect}
                         onOpenPF={onOpenPF}
                         onBet={(info) => onBet(r.id, info)}
                       />
+
                     );
                   })}
                 </div>
