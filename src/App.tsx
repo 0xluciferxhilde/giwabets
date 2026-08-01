@@ -230,6 +230,7 @@ export default function App() {
                   rounds={rounds}
                   addr={addr}
                   head={head}
+                  betsByRound={betsByRound}
                   onNeedConnect={() => openConnectModal?.()}
                   onOpenPF={(b) => setPfBlock(b)}
                   onBet={handleBet}
