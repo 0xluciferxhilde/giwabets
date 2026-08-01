@@ -132,37 +132,45 @@ export default function YourBetsModal({
   onClose: () => void;
 }) {
   const [tab, setTab] = React.useState<"live" | "ended">("live");
-  const [ended, setEnded] = React.useState<EndedBet[]>([]);
   const [endedPage, setEndedPage] = React.useState(1);
   const ENDED_PER_PAGE = 20;
   const [detail, setDetail] = React.useState<{ blockKey: string; mode: string } | null>(null);
   const [verifyCache, setVerifyCache] = React.useState<Record<number, any>>({});
+  const client = usePublicClient();
 
-  React.useEffect(() => {
-    if (!address) return; // never clear on disconnect: keep history visible until remount
-    let alive = true;
-    const load = async () => {
-      try {
-        const r = await fetch(`${API_BASE}/api/bets/${address}?page=1&limit=200`);
-        if (!r.ok) return;
-        const j = await r.json();
-        if (alive && Array.isArray(j.bets)) setEnded(j.bets);
-      } catch { /* */ }
-    };
-    load();
-    const id = setInterval(load, 15000);
-    return () => { alive = false; clearInterval(id); };
-  }, [address]);
+  // settled bets come from BetPlaced / Payout events on the game contracts
+  const chainBets = useWalletBets(address);
+  const ended: EndedBet[] = React.useMemo(
+    () =>
+      chainBets
+        .filter((b) => b.targetBlock > 0)
+        .map((b) => ({
+          roundId: b.roundId,
+          block: b.targetBlock,
+          mode: b.mode,
+          pick: b.pick,
+          stake: b.stake,
+          win: b.win,
+          payout: b.payout,
+          settledAt: b.settledAt,
+        })),
+    [chainBets],
+  );
 
   const fetchVerify = async (block: number) => {
-    if (verifyCache[block]) return;
+    if (verifyCache[block] || !client) return;
     try {
-      const r = await fetch(`${API_BASE}/api/verify/${block}`);
-      if (!r.ok) return;
-      const j = await r.json();
-      setVerifyCache((p) => ({ ...p, [block]: j }));
+      const b = await client.getBlock({ blockNumber: BigInt(block) });
+      const info = {
+        number: Number(b.number),
+        hash: b.hash as string,
+        txCount: b.transactions.length,
+        gasUsed: String(b.gasUsed),
+      };
+      setVerifyCache((p) => ({ ...p, [block]: { block: info, signals: deriveSignals(info) } }));
     } catch { /* */ }
   };
+
 
   // group live bets per round
   const liveGroups: LiveGroup[] = React.useMemo(() => {
