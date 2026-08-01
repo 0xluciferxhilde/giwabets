@@ -1,7 +1,7 @@
 import React from "react";
 import { Shield, History, ArrowLeft, Wallet2 } from "lucide-react";
 import { type RoundView } from "./lib/api";
-import { useOnchainRounds, useHead } from "./lib/chain";
+import { useOnchainRounds, useHead, useWalletBets } from "./lib/chain";
 import { useAccount, useBalance } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
@@ -45,11 +45,13 @@ export default function App() {
   }, []);
   const [historyPage, setHistoryPage] = React.useState(1);
   const [pfBlock, setPfBlock] = React.useState<number | null>(null);
-  const [liveBets, setLiveBets] = React.useState<LiveBet[]>([]);
   const [showYourBets, setShowYourBets] = React.useState(false);
 
   const { address, isConnected } = useAccount();
-  const { data: balance, refetch: refetchBal } = useBalance({ address });
+  const { data: balance, refetch: refetchBal } = useBalance({
+    address,
+    query: { refetchInterval: 5000 },
+  });
   const { openConnectModal } = useConnectModal();
 
   const addr = isConnected && address ? address.toLowerCase() : null;
@@ -60,38 +62,48 @@ export default function App() {
   const { live: rounds, history: allHistory, refresh } = useOnchainRounds(inZone);
   const head = useHead(inZone);
 
+  // wallet bets are read from the contracts — never from component memory,
+  // so they survive a page refresh and split live/ended on one `settled` flag.
+  const { bets: walletBets, refetch: refetchBets } = useWalletBets(addr);
+  const liveBets: LiveBet[] = React.useMemo(
+    () =>
+      walletBets
+        .filter((b) => !b.settled)
+        .map((b) => ({
+          roundId: b.roundKey,
+          mode: b.mode,
+          pick: b.pick,
+          stake: b.stake,
+          placedAt: b.lockAt,
+        })),
+    [walletBets],
+  );
+
   const HISTORY_PER_PAGE = 10;
   const historyPages = Math.max(1, Math.ceil(allHistory.length / HISTORY_PER_PAGE));
   const history = allHistory.slice((historyPage - 1) * HISTORY_PER_PAGE, historyPage * HISTORY_PER_PAGE);
 
   React.useEffect(() => { if (inZone) setHistoryPage(1); }, [inZone]);
 
-  // prune live bets whose round is no longer active (settled → shows up in ended).
-  React.useEffect(() => {
-    if (rounds.length === 0) return;
-    const active = new Set(rounds.map((r) => r.id));
-    setLiveBets((prev) => prev.filter((b) => active.has(b.roundId)));
-  }, [rounds]);
-
-
-  // wallet change → full reset (clear live bets, force remount of round cards to reset mode/picks)
+  // wallet change → force remount of round cards (reset mode/picks) and refetch chain state
   const [resetKey, setResetKey] = React.useState(0);
   const prevAddrRef = React.useRef<string | null>(null);
   React.useEffect(() => {
     if (prevAddrRef.current !== addr) {
       prevAddrRef.current = addr;
-      setLiveBets([]);
       setShowYourBets(false);
       setResetKey((k) => k + 1);
       refetchBal();
+      refetchBets();
     }
-  }, [addr, refetchBal]);
+  }, [addr, refetchBal, refetchBets]);
 
-  const handleBet = (roundId: number, i: { mode: string; pick: string }) => {
-    setLiveBets((p) => [...p, { roundId, mode: i.mode, pick: i.pick, stake: 0.01, placedAt: Date.now() }]);
+  const handleBet = () => {
     refetchBal();
+    refetchBets();
     refresh();
   };
+
 
   const totalLiveStaked = rounds.reduce((s, r) => s + r.totalStaked, 0);
   const totalLivePlayers = rounds.reduce((s, r) => s + r.players, 0);
