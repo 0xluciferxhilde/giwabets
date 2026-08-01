@@ -1,9 +1,11 @@
-import { API_BASE } from "../lib/config";
 import React from "react";
 import { Wallet2, ChevronDown, ChevronUp, ExternalLink, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { usePublicClient } from "wagmi";
 import { EXPLORER } from "../lib/wagmi";
 import { MODE_MAP, signals as deriveSignals } from "../lib/modes";
+import { useWalletBets } from "../lib/chain";
 import Coin from "./Coin";
+
 
 export type LiveBet = {
   roundId: number;
