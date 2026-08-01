@@ -190,7 +190,9 @@ export function useOnchainRounds(active: boolean) {
         if (!alive) return;
 
         const now = Date.now();
-        setLive(rounds.filter((r) => r.status !== "settled" && r.settleAt > now - 20_000).slice(0, 2));
+        // keep every currently open/locked round live (backend runs ~5 concurrently)
+        setLive(rounds.filter((r) => r.status !== "settled" && r.settleAt > now - 20_000));
+
         setHistory(rounds.filter((r) => r.status === "settled").sort((a, b) => b.lockAt - a.lockAt));
       } catch { /* rpc hiccup — keep last known state */ }
     };
@@ -265,26 +267,42 @@ export type WalletBet = {
   mode: string;
   pick: string;
   stake: number;
-  roundId: number;
+  roundId: number;    // per-contract round id
+  roundKey: number;   // shared round key (floor(lockAt/1000)) — matches OnchainRound.id
   block: number;      // chain block the bet tx landed in
   win: boolean;
   payout: number;
+  status: number;     // on-chain round status
+  settled: boolean;   // single source of truth for live vs ended
+  lockAt: number;
   settledAt: number;
   targetBlock: number;
 };
 
-/** All BetPlaced + Payout events for one wallet across the 8 contracts. */
+/**
+ * All bets for one wallet, read straight from the 8 game contracts.
+ *
+ * BetPlaced logs give the (round, pick, stake) tuples; a single multicall over
+ * `getRound` for those rounds gives the authoritative status. `settled` is the
+ * one flag that decides whether a bet is live or ended — nothing is cached in
+ * component state, so a refresh never loses a live bet.
+ */
 export function useWalletBets(address: string | null, lookback = 20000n) {
   const client = usePublicClient();
   const [bets, setBets] = React.useState<WalletBet[]>([]);
+  const [nonce, setNonce] = React.useState(0);
+  const refetch = React.useCallback(() => setNonce((n) => n + 1), []);
 
   React.useEffect(() => {
     if (!client || !address) { setBets([]); return; }
     let alive = true;
+
     const load = async () => {
       try {
         const head = await client.getBlockNumber();
         const fromBlock = head > lookback ? head - lookback : 0n;
+
+        // 1. BetPlaced + Payout events per contract for this wallet
         const per = await Promise.all(
           GAMES.map(async (g) => {
             try {
@@ -298,53 +316,82 @@ export function useWalletBets(address: string | null, lookback = 20000n) {
                   args: { winner: address as `0x${string}` }, fromBlock, toBlock: head,
                 }),
               ]);
-              const payByRound = new Map<number, number>();
-              paid.forEach((l: any) => {
-                const rid = Number(l.args.roundId);
-                payByRound.set(rid, (payByRound.get(rid) || 0) + Number(formatEther(BigInt(l.args.amount ?? 0n))));
-              });
-              // resolve target blocks for the rounds this wallet played
-              const roundIds = Array.from(new Set(placed.map((l: any) => Number(l.args.roundId))));
-              const rounds = await Promise.all(
-                roundIds.map((rid) =>
-                  client.readContract({ address: g.address, abi: g.abi, functionName: "getRound", args: [BigInt(rid)] })
-                    .then((r: any) => [rid, decodeRound(g, r as readonly any[])] as const)
-                    .catch(() => [rid, null] as const),
-                ),
-              );
-              const roundMap = new Map(rounds);
-              return placed.map((l: any) => {
-                const rid = Number(l.args.roundId);
-                const info = roundMap.get(rid);
-                const payout = payByRound.get(rid) || 0;
-                return {
-                  mode: g.mode as string,
-                  pick: g.picks
-                    ? g.picks[Number(l.args.pick) === 1 ? 0 : 1]
-                    : String(l.args.pick),
-                  stake: Number(formatEther(BigInt(l.args.amount ?? 0n))),
-                  roundId: rid,
-                  block: Number(l.blockNumber),
-                  win: payout > 0,
-                  payout,
-                  settledAt: info ? info.settleAt : 0,
-                  targetBlock: info ? info.targetBlockNumber : 0,
-                } as WalletBet;
-              });
-            } catch { return [] as WalletBet[]; }
+              return { game: g, placed, paid };
+            } catch {
+              return { game: g, placed: [] as any[], paid: [] as any[] };
+            }
           }),
         );
-        if (!alive) return;
-        setBets(per.flat().sort((a, b) => b.block - a.block));
-      } catch { /* */ }
-    };
-    load();
-    const id = setInterval(load, 20000);
-    return () => { alive = false; clearInterval(id); };
-  }, [client, address, lookback]);
 
-  return bets;
+        // 2. one multicall for every (contract, roundId) the wallet touched
+        const roundCalls: Array<{ game: GameDef; roundId: number }> = [];
+        per.forEach(({ game, placed }) => {
+          const ids = Array.from(new Set(placed.map((l: any) => Number(l.args.roundId))));
+          ids.forEach((roundId) => roundCalls.push({ game, roundId }));
+        });
+
+        const roundMap = new Map<string, ChainRoundRaw>();
+        if (roundCalls.length > 0) {
+          const results = await client.multicall({
+            allowFailure: true,
+            contracts: roundCalls.map((c) => ({
+              address: c.game.address,
+              abi: c.game.abi,
+              functionName: "getRound",
+              args: [BigInt(c.roundId)],
+            })) as any,
+          });
+          results.forEach((r, i) => {
+            if (r.status !== "success" || !Array.isArray(r.result)) return;
+            const c = roundCalls[i];
+            roundMap.set(`${c.game.mode}:${c.roundId}`, decodeRound(c.game, r.result as readonly any[]));
+          });
+        }
+
+        // 3. build the bet list — classification comes only from round.status
+        const out: WalletBet[] = [];
+        per.forEach(({ game, placed, paid }) => {
+          const payByRound = new Map<number, number>();
+          paid.forEach((l: any) => {
+            const rid = Number(l.args.roundId);
+            payByRound.set(rid, (payByRound.get(rid) || 0) + Number(formatEther(BigInt(l.args.amount ?? 0n))));
+          });
+          placed.forEach((l: any) => {
+            const rid = Number(l.args.roundId);
+            const info = roundMap.get(`${game.mode}:${rid}`);
+            const payout = payByRound.get(rid) || 0;
+            const status = info ? info.status : STATUS.OPEN;
+            out.push({
+              mode: game.mode as string,
+              pick: game.picks ? game.picks[Number(l.args.pick) === 1 ? 0 : 1] : String(l.args.pick),
+              stake: Number(formatEther(BigInt(l.args.amount ?? 0n))),
+              roundId: rid,
+              roundKey: info ? Math.floor(info.lockAt / 1000) : 0,
+              block: Number(l.blockNumber),
+              win: payout > 0,
+              payout,
+              status,
+              settled: status === STATUS.SETTLED,
+              lockAt: info ? info.lockAt : 0,
+              settledAt: info ? info.settleAt : 0,
+              targetBlock: info ? info.targetBlockNumber : 0,
+            });
+          });
+        });
+
+        if (!alive) return;
+        setBets(out.sort((a, b) => b.block - a.block));
+      } catch { /* rpc hiccup — keep last known state */ }
+    };
+
+    load();
+    const id = setInterval(load, 8000);
+    return () => { alive = false; clearInterval(id); };
+  }, [client, address, lookback, nonce]);
+
+  return { bets, refetch };
 }
+
 
 /** Block facts for the Provably Fair panel — straight from the RPC. */
 export function useBlockFacts(blockNumber: number | null) {

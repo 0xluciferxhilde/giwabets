@@ -123,10 +123,10 @@ function ScopeAnim() {
 }
 
 export default function YourBetsModal({
-  address, liveBets, rounds, head, onClose,
+  address, rounds, head, onClose,
 }: {
   address: string | null;
-  liveBets: LiveBet[];
+  liveBets?: LiveBet[];
   rounds: Array<{ id: number; lockAt: number; settleAt: number }>;
   head: number | null;
   onClose: () => void;
@@ -138,12 +138,27 @@ export default function YourBetsModal({
   const [verifyCache, setVerifyCache] = React.useState<Record<number, any>>({});
   const client = usePublicClient();
 
-  // settled bets come from BetPlaced / Payout events on the game contracts
-  const chainBets = useWalletBets(address);
+  // one on-chain read feeds both tabs; `settled` decides where a bet renders
+  const { bets: chainBets } = useWalletBets(address);
+
+  const liveBets: LiveBet[] = React.useMemo(
+    () =>
+      chainBets
+        .filter((b) => !b.settled)
+        .map((b) => ({
+          roundId: b.roundKey,
+          mode: b.mode,
+          pick: b.pick,
+          stake: b.stake,
+          placedAt: b.lockAt,
+        })),
+    [chainBets],
+  );
+
   const ended: EndedBet[] = React.useMemo(
     () =>
       chainBets
-        .filter((b) => b.targetBlock > 0)
+        .filter((b) => b.settled)
         .map((b) => ({
           roundId: b.roundId,
           block: b.targetBlock,
@@ -156,6 +171,7 @@ export default function YourBetsModal({
         })),
     [chainBets],
   );
+
 
   const fetchVerify = async (block: number) => {
     if (verifyCache[block] || !client) return;

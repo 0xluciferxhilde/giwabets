@@ -25,10 +25,12 @@ function useNow() {
 }
 
 export default function RoundCard({
-  round, slot, addr, head, onNeedConnect, onOpenPF, onBet,
+  round, slot, addr, head, chainBets, onNeedConnect, onOpenPF, onBet,
 }: {
   round: RoundView; slot: "closing" | "open"; addr: string | null;
   head: number | null;
+  /** this wallet's on-chain bets for this round (source of truth) */
+  chainBets?: Array<{ mode: string; pick: string }>;
   onNeedConnect: () => void; onOpenPF: (b: number) => void;
   onBet: (i: { mode: string; pick: string; txHash: string }) => void;
 }) {
@@ -38,7 +40,14 @@ export default function RoundCard({
   const [pick, setPick] = React.useState("even");
   const [num, setNum] = React.useState("");
   const [placing, setPlacing] = React.useState(false);
-  const [myBets, setMyBets] = React.useState<Array<{ mode: string; pick: string }>>([]);
+  const [localBets, setLocalBets] = React.useState<Array<{ mode: string; pick: string }>>([]);
+  // chain reads win; local entries only bridge the gap until the next poll
+  const myBets = React.useMemo(() => {
+    const chain = chainBets ?? [];
+    const seen = new Set(chain.map((b) => b.mode));
+    return [...chain, ...localBets.filter((b) => !seen.has(b.mode))];
+  }, [chainBets, localBets]);
+
   const [revealStep, setRevealStep] = React.useState(0);
   const [helpOpen, setHelpOpen] = React.useState(false);
   const [toast, setToast] = React.useState<BetToastData | null>(null);
@@ -140,7 +149,7 @@ export default function RoundCard({
 
   React.useEffect(() => {
     if (!txConfirmed || !pendingTx || !pendingBet) return;
-    setMyBets((p) => [...p, pendingBet]);
+    setLocalBets((p: Array<{ mode: string; pick: string }>) => [...p, pendingBet]);
     onBet({ mode: pendingBet.mode, pick: pendingBet.pick, txHash: pendingTx });
     const last4 = (addr || "").slice(-4);
     const ts4 = String(Date.now()).slice(-4);

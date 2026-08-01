@@ -49,11 +49,9 @@ function useNow() {
 
 export default function YourBets({
   address,
-  liveBets,
   rounds,
 }: {
   address: string | null;
-  liveBets: LiveBet[];
   rounds: Array<{ id: number; lockAt: number; settleAt: number }>;
 }) {
   const [tab, setTab] = React.useState<"live" | "ended">("live");
@@ -65,10 +63,18 @@ export default function YourBets({
   const now = useNow();
   const client = usePublicClient();
 
-  // settled bets, straight from the game contracts' events
-  const chainBets = useWalletBets(address);
+  // single on-chain source: live vs ended is decided only by round.settled
+  const { bets: chainBets } = useWalletBets(address);
+
+  const liveBets: LiveBet[] = React.useMemo(
+    () => chainBets.filter((b) => !b.settled).map((b) => ({
+      roundId: b.roundKey, mode: b.mode, pick: b.pick, stake: b.stake, placedAt: b.lockAt,
+    })),
+    [chainBets],
+  );
+
   const ended: EndedBet[] = React.useMemo(
-    () => chainBets.filter((b) => b.targetBlock > 0).map((b) => ({
+    () => chainBets.filter((b) => b.settled).map((b) => ({
       roundId: b.roundId, block: b.targetBlock, mode: b.mode, pick: b.pick,
       stake: b.stake, win: b.win, payout: b.payout, settledAt: b.settledAt,
     })),
@@ -78,6 +84,7 @@ export default function YourBets({
   // Clamp current page when underlying arrays shrink.
   const liveTotalPages = Math.max(1, Math.ceil(liveBets.length / PAGE_SIZE));
   const endedTotalPages = Math.max(1, Math.ceil(ended.length / PAGE_SIZE));
+
   React.useEffect(() => { if (livePage >= liveTotalPages) setLivePage(liveTotalPages - 1); }, [livePage, liveTotalPages]);
   React.useEffect(() => { if (endedPage >= endedTotalPages) setEndedPage(endedTotalPages - 1); }, [endedPage, endedTotalPages]);
 

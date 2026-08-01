@@ -7,7 +7,8 @@ import Coin from "./Coin";
 
 export default function WalletButton() {
   const { address, isConnected } = useAccount();
-  const { data: bal } = useBalance({ address });
+  // always reflect on-chain truth: poll the node instead of trusting a cached read
+  const { data: bal } = useBalance({ address, query: { refetchInterval: 5000 } });
   const { disconnect } = useDisconnect();
   const [open, setOpen] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
