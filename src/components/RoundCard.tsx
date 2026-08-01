@@ -149,7 +149,7 @@ export default function RoundCard({
 
   React.useEffect(() => {
     if (!txConfirmed || !pendingTx || !pendingBet) return;
-    setMyBets((p) => [...p, pendingBet]);
+    setLocalBets((p: Array<{ mode: string; pick: string }>) => [...p, pendingBet]);
     onBet({ mode: pendingBet.mode, pick: pendingBet.pick, txHash: pendingTx });
     const last4 = (addr || "").slice(-4);
     const ts4 = String(Date.now()).slice(-4);
