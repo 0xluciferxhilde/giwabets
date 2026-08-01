@@ -116,7 +116,7 @@ export default function App() {
               <div><h1>Giwa<b>Bets</b></h1></div>
             </div>
             <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 10 }}>
-              <HeaderStats />
+              <HeaderStats totalBets={totalBetsAllTime} />
             </div>
             <div className="top-right">
               <div className="live-head"><span className="pulse" /> Block <b className="mono" style={{ marginLeft: 4 }}>#{head?.toLocaleString() ?? "…"}</b></div>
@@ -141,7 +141,7 @@ export default function App() {
             <div><h1>Giwa<b>Bets</b></h1></div>
           </div>
           <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 10 }}>
-            <HeaderStats />
+            <HeaderStats totalBets={totalBetsAllTime} />
           </div>
           <div className="top-right">
             <div className="live-head"><span className="pulse" /> Block <b className="mono" style={{ marginLeft: 4 }}>#{head?.toLocaleString() ?? "…"}</b></div>
