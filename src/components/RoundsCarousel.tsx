@@ -7,12 +7,16 @@ type Props = {
   rounds: RoundView[];
   addr: string | null;
   head: number | null;
+  /** wallet's on-chain bets grouped by round id */
+  betsByRound?: Record<number, Array<{ mode: string; pick: string }>>;
   onNeedConnect: () => void;
   onOpenPF: (b: number) => void;
   onBet: (roundId: number, info: { mode: string; pick: string }) => void;
 };
 
+/** cards shown per carousel page — the number of live rounds itself is uncapped */
 const PAGE_SIZE = 2;
+
 
 export default function RoundsCarousel({ rounds, addr, head, onNeedConnect, onOpenPF, onBet }: Props) {
   const pages = Math.max(1, Math.ceil(rounds.length / PAGE_SIZE));
