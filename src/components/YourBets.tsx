@@ -57,7 +57,6 @@ export default function YourBets({
   rounds: Array<{ id: number; lockAt: number; settleAt: number }>;
 }) {
   const [tab, setTab] = React.useState<"live" | "ended">("live");
-  const [ended, setEnded] = React.useState<EndedBet[]>([]);
   const [loading] = React.useState(false);
   const [expanded, setExpanded] = React.useState<number | null>(null);
   const [verifyCache, setVerifyCache] = React.useState<Record<number, any>>({});
@@ -94,8 +93,9 @@ export default function YourBets({
     } catch { /* */ }
   };
 
-
+  const toggle = (idx: number, block: number) => {
     setExpanded(expanded === idx ? null : idx);
+
     if (expanded !== idx) fetchVerify(block);
   };
 
